@@ -1,16 +1,13 @@
 FROM maven:3.9.6-eclipse-temurin-21-jammy AS builder
 
-WORKDIR /app
+COPY src /home/app/src
+COPY pom.xml /home/app
 
-COPY pom.xml .
+WORKDIR /home/app
 
-COPY src ./src
+RUN mvn clean package -DskipTests
 
-RUN apt-get update && apt-get install -y maven && \
-    mvn clean package && \
-    mv target/*.jar app.jar
-
-FROM openjdk:11-jre-slim
+FROM eclipse-temurin:21.0.2_13-jre-jammy
 
 COPY --from=build /app/app.jar /app/app.jar
 
