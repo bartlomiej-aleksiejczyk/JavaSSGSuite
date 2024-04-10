@@ -9,7 +9,7 @@ RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:21.0.2_13-jre-jammy
 
-COPY --from=build /app/app.jar /app/app.jar
+COPY --from=builder /home/app/target/*jar-with-dependencies.jar app/app.jar
 
 WORKDIR /app
 
