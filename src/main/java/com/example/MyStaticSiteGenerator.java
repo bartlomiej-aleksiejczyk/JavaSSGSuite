@@ -1,45 +1,40 @@
 package com.example;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import com.example.staticgenerator.templates.entities.IterableRouteEntity;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 public class MyStaticSiteGenerator {
+
+    private static final TemplateEngine templateEngine = initializeTemplateEngine();
+    private static Map<String, List<? extends IterableRouteEntity>> entityMap = new HashMap<>();
+
     public static void main(String[] args) {
-        // Load routes from properties file
-        Properties routes = new Properties();
-        try {
-            routes.load(MyStaticSiteGenerator.class.getResourceAsStream("/routes.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
 
-        TemplateEngine templateEngine = new TemplateEngine();
-        ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
-        resolver.setPrefix("/templates/");
-        resolver.setSuffix(".html");
-        templateEngine.setTemplateResolver(resolver);
+        routes.forEach((path, value) -> {
+            String[] parts = ((String) value).split(":");
+            String templateName = parts[0];
+            String entityType = parts.length > 1 ? parts[1] : null;
 
-        // Iterate over each route
-        routes.forEach((path, templateName) -> {
-            Context context = new Context();
-            // Add your model attributes to the context if needed
-            context.setVariable("user", new UserForm());
-
-            String output = templateEngine.process(templateName.toString(), context);
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("output" + path + ".html"))) {
-                writer.write(output);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (entityType != null && entityMap.containsKey(entityType)) {
+                // This is an iterable route
+                List<? extends IterableRouteEntity> entities = entityMap.get(entityType);
+                for (IterableRouteEntity iterableRouteEntity : entities) {
+                    generatePageForEntity(iterableRouteEntity, templateName, path.toString());
+                }
+            } else {
+                // Handle static route
+                generateStaticPage(path.toString(), templateName);
             }
         });
-
     }
+
+
+
+
+
 
 }
