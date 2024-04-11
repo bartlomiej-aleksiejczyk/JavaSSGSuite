@@ -1,5 +1,6 @@
 package com.example.staticgenerator.templates.entities;
 
-public interface IterableRouteEntity {
+public interface IterableEntity {
     String getIdentifier();
+
 }

@@ -2,12 +2,13 @@ package com.example.staticgenerator.templates.entities;
 
 import org.thymeleaf.context.Context;
 
-public class TemplateData {
+//TODO: Intelligent Autocompletion
+public class PageData {
     private String templateName;
     private String outputPath;
     private Context context;
 
-    public TemplateData(String templateName, String outputPath, Context context) {
+    public PageData(String templateName, String outputPath, Context context) {
         this.templateName = templateName;
         this.outputPath = outputPath;
         this.context = context;
